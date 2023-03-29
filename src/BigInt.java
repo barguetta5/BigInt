@@ -250,16 +250,58 @@ public class BigInt {
         BigInt newBigInt = new BigInt(number);
         return newBigInt;
     }
-//    public BigInt multiply(BigInt other)
-//    {
-//        int len = _number.size();
-//        int len2 = other._number.size();
-//
-//        if (len>len2)
-//        {
-//
-//        }
-//    }
+
+    public BigInt multiply(BigInt other)
+    {
+        ArrayList<Character> number = new ArrayList<Character>();
+        ArrayList<Character> sum = new ArrayList<Character>();
+        sum.add('+');
+        sum.add('0');
+        int len = _number.size()-1;
+        int len2 = other._number.size()-1;
+        int tenJumps = 10;
+        int unit;
+        int tens;
+        int num1;
+        int num2;
+        int countZero1 = 0;
+        int countZero2 = 0;
+        BigInt newBigInt = new BigInt(sum);
+        BigInt otherNewBigInt = new BigInt(number);
+        if (len>=len2)
+        {
+            for (int i = len2;i>0;i--)
+            {
+                number.add('+');
+                for (int c = countZero1;c>0;c--)
+                {
+                    number.add('0');
+                }
+                for (int j=len;j>0;j--)
+                {
+                    for (int c = countZero2;c>0;c--)
+                    {
+                        number.add('0');
+                    }
+                    num1 = Character.getNumericValue(_number.get(j));
+                    num2 = Character.getNumericValue(other._number.get(len2));
+                    unit = num1%10;
+                    tens = num2/10;
+                    number.add((char) (unit + '0'));
+                    number.add((char) (tens + '0'));
+                    Collections.reverse(number);
+                    countZero2++;
+                }
+                newBigInt.plus(otherNewBigInt);
+                number.clear();
+                countZero2++;
+            }
+
+
+
+        }
+        return  newBigInt;
+    }
     public boolean equals(BigInt other)
     {
         if ((other instanceof BigInt )&& this.compareTo(other) == 0)
