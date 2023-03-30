@@ -266,39 +266,46 @@ public class BigInt {
         int num2;
         int countZero1 = 0;
         int countZero2 = 0;
+        int result;
         BigInt newBigInt = new BigInt(sum);
         BigInt otherNewBigInt = new BigInt(number);
         if (len>=len2)
         {
             for (int i = len2;i>0;i--)
             {
-                number.add('+');
-                for (int c = countZero1;c>0;c--)
+                countZero2 = countZero1;
+                for (int c = countZero1;c>0;c--)//adding zeros to the first multy number
                 {
                     number.add('0');
                 }
                 for (int j=len;j>0;j--)
                 {
-                    for (int c = countZero2;c>0;c--)
+                    for (int c = countZero2;c>0&&j<len2;c--)
                     {
                         number.add('0');
                     }
                     num1 = Character.getNumericValue(_number.get(j));
-                    num2 = Character.getNumericValue(other._number.get(len2));
-                    unit = num1%10;
-                    tens = num2/10;
+                    num2 = Character.getNumericValue(other._number.get(i));
+                    result = num1 *num2;
+                    unit = result%10;
+                    tens = result/10;
+                    if (result>9)
+                        number.add((char) (tens + '0'));
+                    System.out.println("number = "+number.toString());
                     number.add((char) (unit + '0'));
-                    number.add((char) (tens + '0'));
+                    number.add('+');
                     Collections.reverse(number);
+
+                    newBigInt = newBigInt.plus(otherNewBigInt);
+                    number.clear();
                     countZero2++;
                 }
-                newBigInt.plus(otherNewBigInt);
-                number.clear();
-                countZero2++;
+                countZero1++;
             }
-
-
-
+            if (_number.get(0)!= other._number.get(0))
+            {
+                newBigInt._number.set(0,'-');
+            }
         }
         return  newBigInt;
     }
