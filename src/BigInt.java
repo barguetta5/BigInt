@@ -11,6 +11,9 @@ public class BigInt {
     public BigInt(ArrayList<Character> number) {
         _number = number;
     }
+    public BigInt(BigInt other) {
+        _number = other._number;
+    }
 
     public BigInt() {
         _number = null;
@@ -259,11 +262,8 @@ public class BigInt {
         sum.add('0');
         int len = _number.size()-1;
         int len2 = other._number.size()-1;
-        int tenJumps = 10;
         int unit;
         int tens;
-        int num1;
-        int num2;
         int countZero1 = 0;
         int countZero2 = 0;
         int result;
@@ -284,9 +284,8 @@ public class BigInt {
                     {
                         number.add('0');
                     }
-                    num1 = Character.getNumericValue(_number.get(j));
-                    num2 = Character.getNumericValue(other._number.get(i));
-                    result = num1 *num2;
+                    result = Character.getNumericValue(_number.get(j)) *
+                            Character.getNumericValue(other._number.get(i));
                     unit = result%10;
                     tens = result/10;
                     if (result>9)
@@ -309,6 +308,38 @@ public class BigInt {
         }
         return  newBigInt;
     }
+    public BigInt divide(BigInt other)
+    {
+        ArrayList<Character> number = new ArrayList<Character>();
+        ArrayList<Character> result = new ArrayList<Character>();
+        number.add('+');
+        number.add('0');
+        int count = 0;
+        String num;
+        BigInt newBigInt = new BigInt(other);
+        while (this.compareTo(newBigInt) == 1||this.compareTo(newBigInt) == 0)
+        {
+            newBigInt = other.plus(newBigInt);
+            count++;
+
+        }
+        num = Integer.toString(count);
+
+        for (int i = 0;i<num.length();i++);
+        {
+            result.add(num.charAt(i));
+        }
+        if (_number.get(0)!= other._number.get(0))
+            newBigInt._number.set(0,'-');
+        else
+            newBigInt._number.set(0,'+');
+
+        //Collections.reverse(number);
+        newBigInt._number = number;
+        return  newBigInt;
+
+    }
+
     public boolean equals(BigInt other)
     {
         if ((other instanceof BigInt )&& this.compareTo(other) == 0)
