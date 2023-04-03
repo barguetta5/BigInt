@@ -4,62 +4,95 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-
+/*
+* in that class we can made huge numbers and use them with a lot of operators
+* */
 public class BigInt {
     private ArrayList<Character> _number = new ArrayList<Character>();
-
+    /*
+     * At this constructor we set Big number with Array list  * */
     public BigInt(ArrayList<Character> number) {
         _number = number;
     }
+    /*
+     * At this constructor we set Big number another big number  * */
     public BigInt(BigInt other) {
-        _number = other._number;
-    }
+         ArrayList<Character> number = new ArrayList<Character>();
+         for (int i = 0;i<other._number.size();i++)
+             number.add(other._number.get(i));
 
-    public BigInt() {
-        _number = null;
-    }
+        _number = number;
 
+    }
+    /*
+     * At this constructor we set Big number with String  * */
     public BigInt(String number) {
+        boolean use = false;
+        try {
+                int x = Integer.parseInt(number);
+        }
+        catch (IllegalArgumentException e)
+        {
+            System.out.println("the string not a number ");
+        }
         for (int i = 0; i < number.length(); i++) {
-            if (i == 0 && (number.charAt(i) == '+' || number.charAt(i) == '-')) {
-                _number.add(number.charAt(i));
-            } else if (i == 0) {
-                //throw exception
-            } else {
-                if (number.charAt(i) >= '0' && number.charAt(i) <= '9') {
-                    _number.add(number.charAt(i));
-                } else {
-                    //throw exception
-                }
+
+            if (i==0&&(number.charAt(i) != '+' && number.charAt(i) != '-')&&!use) {
+                _number.add('+');
+                use = true;
             }
+            else if (i == 0 && (number.charAt(i) == '+' || number.charAt(i) == '-')) {
+                _number.add(number.charAt(i));
+                continue;
+            }
+            _number.add(number.charAt(i));
         }
     }
-
+    /*
+     * In this method I wanted to do plus but first check who is the bigger number   * */
     public BigInt plus(BigInt other)
     {
+
+        if (this.compareTo(other)==-1)
+            return other.plusOp(this);
+
+        else if (this.compareTo(other)== 1)
+            return this.plusOp(other);
+
+        else
+            return this.plusOp(other);
+    }
+    /*
+     * In this method I did the plus action
+     * * */
+
+    public BigInt plusOp(BigInt other)
+    {
+        BigInt copy1 = new BigInt(this);
+        BigInt copy2 = new BigInt(other);
         ArrayList<Character> number = new ArrayList<Character>();
-        int len = _number.size() - 1;
-        int len2 = other._number.size() - 1;
+        int len = copy1._number.size() - 1;
+        int len2 = copy2._number.size() - 1;
         int c1;
         int c2;
         int sum;
         int rest = 0;
-        if (_number.get(0) != '-' && other._number.get(0) == '-')
+        if (copy1._number.get(0) != '-' && copy2._number.get(0) == '-')
         {
-            other._number.set(0, '+');
-            return this.minus(other);
+            copy2._number.set(0, '+');
+            return copy1.minus(copy2);
         }
-        else if (_number.get(0) == '-' && other._number.get(0) != '-')
+        else if (copy1._number.get(0) == '-' && copy2._number.get(0) != '-')
         {
-            _number.set(0, '+');
-            return other.minus(this);
+            copy1._number.set(0, '+');
+            return copy2.minus(copy1);
         }
         if (len == len2)
         {
             for (int i = len;i>0;i--)
             {
-                c1 = Character.getNumericValue(_number.get(i));
-                c2 = Character.getNumericValue(other._number.get(i));
+                c1 = Character.getNumericValue(copy1._number.get(i));
+                c2 = Character.getNumericValue(copy2._number.get(i));
                 sum = c1+c2+rest;
                 if(sum>9)
                 {
@@ -74,41 +107,12 @@ public class BigInt {
             }
             if (rest==1)
                 number.add('1');
-            number.add(_number.get(0));
+            number.add(copy1._number.get(0));
         }
-        else if (len < len2) {
-            for (int i = len; i > 0; i--) {
-                c1 = Character.getNumericValue(_number.get(i));
-                c2 = Character.getNumericValue(other._number.get(len2));
-                sum = c1 + c2 + rest;
-                if (sum > 9) {
-                    rest = 1;
-                    number.add((char) ((sum - 10) + '0'));
-                } else {
-                    rest = 0;
-                    number.add((char) (sum + '0'));
-                }
-                len2--;
-            }
-            for (int j = len2; j > 0; j--) {
-                sum = Character.getNumericValue(other._number.get(j)) + rest;
-                if (sum > 9) {
-                    rest = 1;
-                    number.add((char) ((sum - 10) + '0'));
-                } else {
-                    rest = 0;
-                    number.add((char) (sum + '0'));
-                }
-
-            }
-            if (rest==1)
-                number.add('1');
-            number.add(_number.get(0));
-        }
-         else {
+        else {
             for (int i = len2; i > 0; i--) {
-                c1 = Character.getNumericValue(_number.get(len));
-                c2 = Character.getNumericValue(other._number.get(i));
+                c1 = Character.getNumericValue(copy1._number.get(len));
+                c2 = Character.getNumericValue(copy2._number.get(i));
                 sum = c1 + c2 + rest;
                 if (sum > 9) {
                     rest = 1;
@@ -120,7 +124,7 @@ public class BigInt {
                 len--;
             }
             for (int j = len; j > 0; j--) {
-                sum = Character.getNumericValue(_number.get(j)) + rest;
+                sum = Character.getNumericValue(copy1._number.get(j)) + rest;
                 if (sum > 9) {
                     rest = 1;
                     number.add((char) ((sum - 10) + '0'));
@@ -132,47 +136,51 @@ public class BigInt {
             }
             if (rest==1)
                 number.add('1');
-            number.add(_number.get(0));
+            number.add(copy1._number.get(0));
         }
         Collections.reverse(number);
         BigInt newBigInt = new BigInt(number);
         return newBigInt;
     }
-
+    /*
+     * In this method I did the minus action
+     * * */
     public BigInt minus(BigInt other)
     {
         ArrayList<Character> number = new ArrayList<Character>();
-        int len = _number.size()-1;
-        int len2 = other._number.size()-1;
+        BigInt copy1 = new BigInt(this);
+        BigInt copy2 = new BigInt(other);
+        int len = copy1._number.size()-1;
+        int len2 = copy2._number.size()-1;
         int sum;
         boolean negativ = false;
         int c1;
         int c2;
         int c3;
-        int bigger = this.compareTo(other);
+        int bigger = copy1.compareTo(copy2);
         int saveLen;
-        if (other._number.get(0) == '-' && _number.get(0) == '+') {//send to plus
-        other._number.set(0,'+');
-        return this.plus(other);
+        if (copy2._number.get(0) == '-' && copy1._number.get(0) == '+') {//send to plus
+            copy2._number.set(0,'+');
+        return copy1.plus(copy2);
         }
-        else if (other._number.get(0) == '+' && _number.get(0) == '-')
+        else if (copy2._number.get(0) == '+' && copy1._number.get(0) == '-')
         {
-            other._number.set(0,'-');
-            return this.plus(other);
+            copy2._number.set(0,'-');
+            return copy1.plus(copy2);
         }
-        else if (other._number.get(0) == '+' && _number.get(0) == '+') {
+        else if (copy2._number.get(0) == '+' && copy1._number.get(0) == '+') {
             if (bigger == 1) {
                 for (int i = len2; i > 0; i--) {
-                    c1 = Character.getNumericValue(_number.get(len));
-                    c2 = Character.getNumericValue(other._number.get(i));
+                    c1 = Character.getNumericValue(copy1._number.get(len));
+                    c2 = Character.getNumericValue(copy2._number.get(i));
                     if (c1 < c2) {
                         saveLen = len;
-                        while (_number.get(saveLen - 1) == '0' && saveLen - 1 > 0) {
-                            _number.set(saveLen - 1, '9');
+                        while (copy1._number.get(saveLen - 1) == '0' && saveLen - 1 > 0) {
+                            copy1._number.set(saveLen - 1, '9');
                             saveLen--;
                         }
-                        c3 = Character.getNumericValue(_number.get(saveLen - 1)) - 1;
-                        _number.set(saveLen - 1, (char) (c3 + '0'));
+                        c3 = Character.getNumericValue(copy1._number.get(saveLen - 1)) - 1;
+                        copy1._number.set(saveLen - 1, (char) (c3 + '0'));
                         c1 += 10;
                     }
                     sum = c1 - c2;
@@ -180,22 +188,22 @@ public class BigInt {
                     len--;
                 }
                 for (int i = len; i > 0; i--) {
-                    number.add(_number.get(i));
+                    number.add(copy1._number.get(i));
                 }
-                number.add(_number.get(0));
+                number.add(copy1._number.get(0));
             }
             else if (bigger == -1) {
                 for (int i = len; i > 0; i--) {
-                    c1 = Character.getNumericValue(_number.get(i));
-                    c2 = Character.getNumericValue(other._number.get(len2));
+                    c1 = Character.getNumericValue(copy1._number.get(i));
+                    c2 = Character.getNumericValue(copy2._number.get(len2));
                     if (c1 > c2) {
                         saveLen = len2;
-                        while (other._number.get(saveLen - 1) == '0' && saveLen - 1 > 0) {
-                            other._number.set(saveLen - 1, '9');
+                        while (copy2._number.get(saveLen - 1) == '0' && saveLen - 1 > 0) {
+                            copy2._number.set(saveLen - 1, '9');
                             saveLen--;
                         }
-                        c3 = Character.getNumericValue(other._number.get(saveLen - 1)) - 1;
-                        other._number.set(saveLen - 1, (char) (c3 + '0'));
+                        c3 = Character.getNumericValue(copy2._number.get(saveLen - 1)) - 1;
+                        copy2._number.set(saveLen - 1, (char) (c3 + '0'));
                         c2 += 10;
                     }
                     sum = c2 - c1;
@@ -203,9 +211,9 @@ public class BigInt {
                     len2--;
                 }
                 for (int i = len2; i > 0; i--) {
-                    number.add(other._number.get(i));
+                    number.add(copy2._number.get(i));
                 }
-                number.add(other._number.get(0));
+                number.add(copy2._number.get(0));
             }
             else
             {number.add('0');
@@ -216,23 +224,23 @@ public class BigInt {
         {
             if (bigger == 1)//small plus normal calculat
             {
-                other._number.set(0,'+');
-                _number.set(0,'+');
+                copy2._number.set(0,'+');
+                copy1._number.set(0,'+');
                 return this.minus(other);
             }
             else if (bigger == -1)//return to the minus3 class and hange everthing to plus
             {
                 for (int i = len2; i > 0; i--) {
-                    c1 = Character.getNumericValue(_number.get(len));
-                    c2 = Character.getNumericValue(other._number.get(i));
+                    c1 = Character.getNumericValue(copy1._number.get(len));
+                    c2 = Character.getNumericValue(copy2._number.get(i));
                     if (c1 < c2) {
                         saveLen = len;
-                        while (_number.get(saveLen - 1) == '0' && saveLen - 1 > 0) {
-                            _number.set(saveLen - 1, '9');
+                        while (copy1._number.get(saveLen - 1) == '0' && saveLen - 1 > 0) {
+                            copy1._number.set(saveLen - 1, '9');
                             saveLen--;
                         }
-                        c3 = Character.getNumericValue(_number.get(saveLen - 1)) - 1;
-                        _number.set(saveLen - 1, (char) (c3 + '0'));
+                        c3 = Character.getNumericValue(copy1._number.get(saveLen - 1)) - 1;
+                        copy1._number.set(saveLen - 1, (char) (c3 + '0'));
                         c1 += 10;
                     }
                     sum = c1 - c2;
@@ -240,9 +248,9 @@ public class BigInt {
                     len--;
                 }
                 for (int i = len; i > 0; i--) {
-                    number.add(_number.get(i));
+                    number.add(copy1._number.get(i));
                 }
-                number.add(_number.get(0));
+                number.add(copy1._number.get(0));
             }
             else
             {number.add('0');
@@ -253,15 +261,19 @@ public class BigInt {
         BigInt newBigInt = new BigInt(number);
         return newBigInt;
     }
-
+    /*
+     * In this method I did the multiplication action
+     * * */
     public BigInt multiply(BigInt other)
     {
+        BigInt copy1 = new BigInt(this);
+        BigInt copy2 = new BigInt(other);
         ArrayList<Character> number = new ArrayList<Character>();
         ArrayList<Character> sum = new ArrayList<Character>();
         sum.add('+');
         sum.add('0');
-        int len = _number.size()-1;
-        int len2 = other._number.size()-1;
+        int len = copy1._number.size()-1;
+        int len2 = copy2._number.size()-1;
         int unit;
         int tens;
         int countZero1 = 0;
@@ -284,13 +296,12 @@ public class BigInt {
                     {
                         number.add('0');
                     }
-                    result = Character.getNumericValue(_number.get(j)) *
-                            Character.getNumericValue(other._number.get(i));
+                    result = Character.getNumericValue(copy1._number.get(j)) *
+                            Character.getNumericValue(copy2._number.get(i));
                     unit = result%10;
                     tens = result/10;
                     if (result>9)
                         number.add((char) (tens + '0'));
-                    System.out.println("number = "+number.toString());
                     number.add((char) (unit + '0'));
                     number.add('+');
                     Collections.reverse(number);
@@ -301,15 +312,20 @@ public class BigInt {
                 }
                 countZero1++;
             }
-            if (_number.get(0)!= other._number.get(0))
+            if (copy1._number.get(0)!= copy2._number.get(0))
             {
                 newBigInt._number.set(0,'-');
             }
         }
         return  newBigInt;
     }
+    /*
+     * In this method I did the divide action
+     * * */
     public BigInt divide(BigInt other)
     {
+        BigInt copy1 = new BigInt(this);
+        BigInt copy2 = new BigInt(other);
         ArrayList<Character> number = new ArrayList<Character>();
         ArrayList<Character> result = new ArrayList<Character>();
         number.add('+');
@@ -317,6 +333,24 @@ public class BigInt {
         int count = 0;
         String num;
         BigInt newBigInt = new BigInt(other);
+        int n;
+        boolean isMinus = false;
+        if (copy1._number.get(0)!= copy2._number.get(0)) {
+            isMinus = true;
+        }
+        copy1._number.set(0,'+');
+        copy2._number.set(0,'+');
+            try
+        {
+            String numberString = "";
+            for (int i = 0;i<copy2._number.size();i++)
+                numberString+=copy2._number.get(i);
+            n = Integer.parseInt(numberString);
+            int check = 10/n;
+        }
+        catch (ArithmeticException e){
+            System.out.println("can not divide by zero");
+        }
         while (this.compareTo(newBigInt) == 1||this.compareTo(newBigInt) == 0)
         {
             newBigInt = other.plus(newBigInt);
@@ -325,21 +359,23 @@ public class BigInt {
         }
         num = Integer.toString(count);
 
-        for (int i = 0;i<num.length();i++);
+        for (int i = num.length()-1;i>=0;i--)
         {
             result.add(num.charAt(i));
         }
-        if (_number.get(0)!= other._number.get(0))
-            newBigInt._number.set(0,'-');
+        if (isMinus)
+            result.add('-');
         else
-            newBigInt._number.set(0,'+');
+            result.add('+');
 
-        //Collections.reverse(number);
-        newBigInt._number = number;
+        Collections.reverse(result);
+        newBigInt._number = result;
         return  newBigInt;
 
     }
-
+    /*
+     * In this method I checked if the objects are the same
+     * * */
     public boolean equals(BigInt other)
     {
         if ((other instanceof BigInt )&& this.compareTo(other) == 0)
@@ -347,7 +383,9 @@ public class BigInt {
         else
             return false;
     }
-
+    /*
+     * In this method I find out the what is the ration between two parameters
+     * * */
     public int compareTo(BigInt other)
     {
         int len1 = _number.size();
@@ -404,7 +442,9 @@ public class BigInt {
         else return 1;
 
     }
-
+    /*
+     *Print method
+     * * */
     public String toString()
     {
         System.out.println(_number);
